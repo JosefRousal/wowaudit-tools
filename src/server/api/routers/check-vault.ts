@@ -12,24 +12,17 @@ const headers = {
 const url = (year: number, week: number) =>
   new URL(`/v1/historical_data?year=${year}&week=${week}`, env.WOWAUDIT_URL);
 
-const getWeek = (date: Date) => {
-  const year = new Date(date.getFullYear(), 0, 1);
-  const days = Math.floor(
-    (date.getMilliseconds() - year.getMilliseconds()) / (24 * 60 * 60 * 1000)
-  );
-  return Math.ceil((date.getDay() + 1 + days) / 7);
-};
-
 export const checkVaultRouter = createTRPCRouter({
   getData: publicProcedure
     .input(
       z.object({
-        date: z.date(),
+        year: z.number(),
+        week: z.number()
       })
     )
     .query(async ({ input }) => {
-      const year = input.date.getFullYear();
-      const week = getWeek(input.date);
+      const year = input.year;
+      const week = input.week;
       console.log(year, week)
       const r = await fetch(url(year, week), {
         headers: new Headers(headers),

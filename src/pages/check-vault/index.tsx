@@ -31,7 +31,6 @@ const arrayRange = (start: number, stop: number) =>
 const Home: NextPage = () => {
   const [year, setYear] = useState(2023);
   const [week, setWeek] = useState(() => getCurrentWeek() - 1);
-  const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [vaultOneMin, setVaultOneMin] = useState<number | undefined>();
   const [vaultTwoMin, setVaultTwoMin] = useState<number | undefined>();
   const [vaultThreeMin, setVaultThreeMin] = useState<number | undefined>();
@@ -52,7 +51,8 @@ const Home: NextPage = () => {
   };
 
   const query = api.checkVault.getData.useQuery({
-    date: selectedDate,
+    year,
+    week
   });
 
   if (query.isLoading) return <Loader />;
@@ -61,17 +61,6 @@ const Home: NextPage = () => {
     <>
       <Container fluid>
         <Group>
-          <DateInput
-            value={selectedDate}
-            onChange={(value) => {
-              if (!value) return;
-              const year = value.getFullYear();
-              const month = value.getMonth();
-              const day = value.getDate();
-              const dateValue = new Date(year, month, day);
-              setSelectedDate(dateValue);
-            }}
-          />
           <Select
             label="Year"
             placeholder="Pick one"
