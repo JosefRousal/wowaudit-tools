@@ -10,7 +10,6 @@ import {
   Space,
   Table,
 } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
 import { type CharacterVaultStats } from "~/server/api/types";
 
 const getCurrentWeek = () => {
