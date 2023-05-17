@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { SpotlightProvider } from "@mantine/spotlight";
 import { IconChecklist } from "@tabler/icons-react";
+import { Analytics } from "@vercel/analytics/react";
 
 import { api } from "~/utils/api";
 
@@ -72,54 +73,57 @@ const spotlightActions = (router: NextRouter) => [
 const MyApp: AppType = ({ Component, pageProps }) => {
   const router = useRouter();
   return (
-    <MantineProvider
-      withGlobalStyles
-      withNormalizeCSS
-      theme={{
-        colorScheme: "dark",
-      }}
-    >
-      <SpotlightProvider actions={spotlightActions(router)}>
-        <AppShell
-          padding="md"
-          navbar={
-            <Navbar p="xs" width={{ base: 300 }}>
-              <Navbar.Section grow mt="md">
-                <MainLink
-                  label="Check Vault"
-                  color="green"
-                  icon={<IconChecklist />}
-                  route="/check-vault"
-                />
-              </Navbar.Section>
-            </Navbar>
-          }
-          header={
-            <Header height={60} p="xs">
-              <Text fz="xl">Wowaudit Tools</Text>
-            </Header>
-          }
-          styles={(theme) => ({
-            main: {
-              backgroundColor:
-                theme.colorScheme === "dark"
-                  ? theme.colors.dark[8]
-                  : theme.colors.gray[0],
-              height: "100vh",
-              overflow: "hidden",
-            },
-          })}
-        >
-          <ScrollArea
-            style={{
-              height: "calc(100vh - 60)",
-            }}
+    <>
+      <MantineProvider
+        withGlobalStyles
+        withNormalizeCSS
+        theme={{
+          colorScheme: "dark",
+        }}
+      >
+        <SpotlightProvider actions={spotlightActions(router)}>
+          <AppShell
+            padding="md"
+            navbar={
+              <Navbar p="xs" width={{ base: 300 }}>
+                <Navbar.Section grow mt="md">
+                  <MainLink
+                    label="Check Vault"
+                    color="green"
+                    icon={<IconChecklist />}
+                    route="/check-vault"
+                  />
+                </Navbar.Section>
+              </Navbar>
+            }
+            header={
+              <Header height={60} p="xs">
+                <Text fz="xl">Wowaudit Tools</Text>
+              </Header>
+            }
+            styles={(theme) => ({
+              main: {
+                backgroundColor:
+                  theme.colorScheme === "dark"
+                    ? theme.colors.dark[8]
+                    : theme.colors.gray[0],
+                height: "100vh",
+                overflow: "hidden",
+              },
+            })}
           >
-            <Component {...pageProps} />
-          </ScrollArea>
-        </AppShell>
-      </SpotlightProvider>
-    </MantineProvider>
+            <ScrollArea
+              style={{
+                height: "calc(100vh - 60)",
+              }}
+            >
+              <Component {...pageProps} />
+            </ScrollArea>
+          </AppShell>
+        </SpotlightProvider>
+      </MantineProvider>
+      <Analytics />
+    </>
   );
 };
 
