@@ -1,5 +1,5 @@
 import { type NextRouter } from "next/router";
-import { IconChecklist } from "@tabler/icons-react";
+import { IconChecklist, IconGift } from "@tabler/icons-react";
 
 export const actions = [
   {
@@ -7,6 +7,11 @@ export const actions = [
     route: "/check-vault",
     icon: <IconChecklist />,
   },
+  {
+    title: 'Wishlist',
+    route: '/wishlist',
+    icon: <IconGift />
+  }
 ];
 
 export const spotlightActions = (router: NextRouter) =>

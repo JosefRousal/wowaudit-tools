@@ -1,6 +1,8 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { exampleRouter } from "~/server/api/routers/example";
 import { checkVaultRouter } from "./routers/check-vault";
+import { wishlistRouter } from "./routers/wishlist";
+import { charactersRouter } from "./routers/characters";
 
 /**
  * This is the primary router for your server.
@@ -9,7 +11,9 @@ import { checkVaultRouter } from "./routers/check-vault";
  */
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
-  checkVault: checkVaultRouter
+  characters: charactersRouter,
+  checkVault: checkVaultRouter,
+  wishlist: wishlistRouter,
 });
 
 // export type definition of API

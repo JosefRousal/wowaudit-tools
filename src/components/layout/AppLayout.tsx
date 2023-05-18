@@ -1,6 +1,5 @@
 import { AppShell, Header, Navbar, ScrollArea, Text } from "@mantine/core";
 import MainLink from "./MainLink";
-import { IconChecklist } from "@tabler/icons-react";
 import { actions } from "../actions";
 
 const AppLayout = (props: { children: JSX.Element | JSX.Element[] }) => {
@@ -15,7 +14,7 @@ const AppLayout = (props: { children: JSX.Element | JSX.Element[] }) => {
                 key={index}
                 label={action.title}
                 color="green"
-                icon={<IconChecklist />}
+                icon={action.icon}
                 route={action.route}
               />
             ))}
@@ -24,7 +23,7 @@ const AppLayout = (props: { children: JSX.Element | JSX.Element[] }) => {
       }
       header={
         <Header height={60} p="xs">
-          <Text fz="xl">Wowaudit Tools</Text>
+          <Text h="1" fz="xl">Wowaudit Tools</Text>
         </Header>
       }
       styles={(theme) => ({
@@ -34,7 +33,6 @@ const AppLayout = (props: { children: JSX.Element | JSX.Element[] }) => {
               ? theme.colors.dark[8]
               : theme.colors.gray[0],
           height: "100vh",
-          overflow: "hidden",
         },
       })}
     >
