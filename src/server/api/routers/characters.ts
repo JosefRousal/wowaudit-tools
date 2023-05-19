@@ -2,11 +2,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { env } from "~/env.mjs";
-
-const headers = {
-  accept: "application/json",
-  Authorization: env.WOWAUDIT_KEY,
-};
+import getHeaders from "../getHeaders";
 
 const CharacterSchema = z
   .object({
@@ -39,7 +35,7 @@ export type WowauditCharacter = z.infer<typeof CharacterSchema>;
 export const charactersRouter = createTRPCRouter({
   getAll: publicProcedure.query(async () => {
     const r = await fetch(new URL(`/v1/characters`, env.WOWAUDIT_URL), {
-      headers: new Headers(headers),
+      headers: new Headers(getHeaders()),
     });
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const json = await r.json();

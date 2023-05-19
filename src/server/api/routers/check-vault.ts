@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { WeekHistorySchema, type CharacterVaultStats } from "../types";
+import { WeekHistorySchema, type CharacterVaultStats } from "../../../types";
 import { env } from "~/env.mjs";
 
 const headers = {
@@ -21,10 +21,7 @@ export const checkVaultRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      const year = input.year;
-      const week = input.week;
-      console.log(year, week)
-      const r = await fetch(url(year, week), {
+      const r = await fetch(url(input.year, input.week), {
         headers: new Headers(headers),
       });
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

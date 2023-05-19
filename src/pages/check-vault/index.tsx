@@ -4,13 +4,10 @@ import { useState } from "react";
 import {
   Container,
   Group,
-  Loader,
-  NumberInput,
   Select,
   Space,
-  Table,
 } from "@mantine/core";
-import { type CharacterVaultStats } from "~/server/api/types";
+import { DataGrid } from "mantine-data-grid";
 
 const getCurrentWeek = () => {
   const currentDate = new Date();
@@ -30,31 +27,11 @@ const arrayRange = (start: number, stop: number) =>
 const Home: NextPage = () => {
   const [year, setYear] = useState(2023);
   const [week, setWeek] = useState(() => getCurrentWeek() - 1);
-  const [vaultOneMin, setVaultOneMin] = useState<number | undefined>();
-  const [vaultTwoMin, setVaultTwoMin] = useState<number | undefined>();
-  const [vaultThreeMin, setVaultThreeMin] = useState<number | undefined>();
-
-  const isBadBoy = (character: CharacterVaultStats) => {
-    if (!character) return false;
-
-    if (!vaultOneMin) return false;
-    if (!character.vaultOne || character.vaultOne < vaultOneMin) return true;
-
-    if (!vaultTwoMin) return false;
-    if (!character.vaultTwo || character.vaultTwo < vaultTwoMin) return true;
-
-    if (!vaultThreeMin) return false;
-    if (!character.vaultThree || character.vaultThree < vaultThreeMin)
-      return true;
-    return false;
-  };
 
   const query = api.checkVault.getData.useQuery({
     year,
-    week
+    week,
   });
-
-  if (query.isLoading) return <Loader />;
 
   return (
     <>
@@ -80,65 +57,33 @@ const Home: NextPage = () => {
               setWeek(Number.parseInt(value));
             }}
           />
-          <NumberInput
-            label="Vault One ILvl"
-            value={vaultOneMin}
-            min={0}
-            onChange={(value) => {
-              if (value === "") {
-                setVaultOneMin(undefined);
-              } else {
-                setVaultOneMin(value);
-              }
-            }}
-          />
-          <NumberInput
-            label="Vault Two ILvl"
-            value={vaultTwoMin}
-            onChange={(value) => {
-              if (value === "") {
-                setVaultTwoMin(undefined);
-              } else {
-                setVaultTwoMin(value);
-              }
-            }}
-          />
-          <NumberInput
-            label="Vault Three ILvl"
-            value={vaultThreeMin}
-            onChange={(value) => {
-              if (value === "") {
-                setVaultThreeMin(undefined);
-              } else {
-                setVaultThreeMin(value);
-              }
-            }}
-          />
         </Group>
         <Space h="md" />
-        <Table>
-          <thead>
-            <th>Name</th>
-            <th>Vault One</th>
-            <th>Vault Two</th>
-            <th>Vault Three</th>
-          </thead>
-          <tbody>
-            {query.data?.map((item, index) => (
-              <tr
-                key={index}
-                style={{
-                  background: isBadBoy(item) ? "red" : "transparent",
-                }}
-              >
-                <td>{item.name}</td>
-                <td>{item.vaultOne}</td>
-                <td>{item.vaultTwo}</td>
-                <td>{item.vaultThree}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <DataGrid
+          data={query.data ?? []}
+          loading={query.isLoading}
+          withBorder
+          withFixedHeader
+          columns={[
+            {
+              accessorFn: (row) => row.name,
+              header: "Character",
+            },
+            {
+              accessorFn: (row) => row.vaultOne,
+              header: "Vault One",
+              enableColumnFilter: true
+            },
+            {
+              accessorFn: (row) => row.vaultTwo,
+              header: "Vault Two",
+            },
+            {
+              accessorFn: (row) => row.vaultThree,
+              header: "Vault Three",
+            },
+          ]}
+        />
       </Container>
     </>
   );

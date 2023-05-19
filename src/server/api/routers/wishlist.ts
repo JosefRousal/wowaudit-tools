@@ -2,13 +2,10 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { env } from "~/env.mjs";
+import getHeaders from "../getHeaders";
+import { type Difficulty, DifficultySchema } from "../../../types";
 
-type Difficulty = "normal" | "heroic" | "mythic";
 
-const headers = {
-  accept: "application/json",
-  Authorization: env.WOWAUDIT_KEY,
-};
 
 const WishlistSchema = z.object({
   name: z.string(),
@@ -21,7 +18,7 @@ const WishlistSchema = z.object({
       name: z.string(),
       difficulties: z.array(
         z.object({
-          difficulty: z.enum(["normal", "heroic", "mythic"]),
+          difficulty: DifficultySchema,
           wishlist: z.object({
             wishlist: z.object({
               report_uploaded_at: z.record(
@@ -52,42 +49,45 @@ const CharacterWishlistSchema = z.object({
   wishlists: z.array(WishlistSchema),
 });
 
-type SpecWishlistUploadInfo = {
+// type SpecWishlistUploadInfo = {
+//   difficulty: Difficulty;
+//   spec: string;
+//   uploadDate: Date | null;
+// };
+
+type CharacterWishlistUploadInfo = {
+  characterName: string;
   difficulty: Difficulty;
   spec: string;
   uploadDate: Date | null;
 };
 
 export const wishlistRouter = createTRPCRouter({
-  characterWishlist: publicProcedure
-    .input(z.number())
-    .query(async ({ input }) => {
-      const url = new URL(`/v1/wishlists/${input}`, env.WOWAUDIT_URL);
-      const response = await fetch(url, {
-        headers: new Headers(headers),
-      });
-      if (!response.ok) {
-        throw new Error(`Received status code ${response.status}`);
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const json = await response.json();
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return CharacterWishlistSchema.parse(json);
-    }),
-  characterWishlistUploadInfo: publicProcedure
+  // characterWishlist: publicProcedure
+  //   .input(z.number())
+  //   .query(async ({ input }) => {
+  //     const url = new URL(`/v1/wishlists/${input}`, env.WOWAUDIT_URL);
+  //     const response = await fetch(url, {
+  //       headers: new Headers(getHeaders()),
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error(`Received status code ${response.status}`);
+  //     }
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //     const json = await response.json();
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  //     return CharacterWishlistSchema.parse(json);
+  //   }),
+  allCharacterWishlistUploadInfo: publicProcedure
     .input(
       z.object({
-        characterId: z.number(),
-        wishlistName: z.string(),
+        wishlistName: z.string().nullable(),
       })
     )
     .query(async ({ input }) => {
-      const url = new URL(
-        `/v1/wishlists/${input.characterId}`,
-        env.WOWAUDIT_URL
-      );
+      const url = new URL(`/v1/wishlists/`, env.WOWAUDIT_URL);
       const response = await fetch(url, {
-        headers: new Headers(headers),
+        headers: new Headers(getHeaders()),
       });
       if (!response.ok) {
         throw new Error(`Received status code ${response.status}`);
@@ -95,31 +95,88 @@ export const wishlistRouter = createTRPCRouter({
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const json = await response.json();
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      const data = CharacterWishlistSchema.parse(json);
+      const data = z
+        .object({
+          characters: z.array(CharacterWishlistSchema),
+        })
+        .parse(json);
 
-      const currentTierInfo = data.wishlists
-        .find((x) => x.name === input.wishlistName ?? "Overall")
-        ?.instances.find((x) => x.id === 17);
+      const result: CharacterWishlistUploadInfo[] = [];
 
-      const result: SpecWishlistUploadInfo[] = [];
+      data.characters.map((character) => {
+        const currentTierInfo = character.wishlists
+          .find((x) => x.name === input.wishlistName ?? "Overall")
+          ?.instances.find((x) => x.id === 17);
 
-      ["normal", "heroic", "mythic"].map((difficulty) => {
-        const difficultyInfo = currentTierInfo?.difficulties.find(
-          (x) => x.difficulty === difficulty
-        );
-        const uploadDateInfo =
-          difficultyInfo?.wishlist.wishlist.report_uploaded_at;
-        if (uploadDateInfo) {
-          Object.keys(uploadDateInfo).map((item) => {
-            result.push({
-              difficulty,
-              spec: item,
-              uploadDate: uploadDateInfo[item],
-            } as SpecWishlistUploadInfo);
-          });
-        }
+        // const result: SpecWishlistUploadInfo[] = [];
+
+        ["normal", "heroic", "mythic"].map((difficulty) => {
+          const difficultyInfo = currentTierInfo?.difficulties.find(
+            (x) => x.difficulty === difficulty
+          );
+          const uploadDateInfo =
+            difficultyInfo?.wishlist.wishlist.report_uploaded_at;
+          if (uploadDateInfo) {
+            Object.keys(uploadDateInfo).map((item) => {
+              result.push({
+                characterName: character.name,
+                difficulty,
+                spec: item,
+                uploadDate: uploadDateInfo[item],
+              } as CharacterWishlistUploadInfo);
+            });
+          }
+        });
       });
 
       return result;
     }),
+  // characterWishlistUploadInfo: publicProcedure
+  //   .input(
+  //     z.object({
+  //       characterId: z.number(),
+  //       wishlistName: z.string(),
+  //     })
+  //   )
+  //   .query(async ({ input }) => {
+  //     const url = new URL(
+  //       `/v1/wishlists/${input.characterId}`,
+  //       env.WOWAUDIT_URL
+  //     );
+  //     const response = await fetch(url, {
+  //       headers: new Headers(getHeaders()),
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error(`Received status code ${response.status}`);
+  //     }
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //     const json = await response.json();
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  //     const data = CharacterWishlistSchema.parse(json);
+
+  //     const currentTierInfo = data.wishlists
+  //       .find((x) => x.name === input.wishlistName ?? "Overall")
+  //       ?.instances.find((x) => x.id === 17);
+
+  //     const result: SpecWishlistUploadInfo[] = [];
+
+  //     ["normal", "heroic", "mythic"].map((difficulty) => {
+  //       const difficultyInfo = currentTierInfo?.difficulties.find(
+  //         (x) => x.difficulty === difficulty
+  //       );
+  //       const uploadDateInfo =
+  //         difficultyInfo?.wishlist.wishlist.report_uploaded_at;
+  //       if (uploadDateInfo) {
+  //         Object.keys(uploadDateInfo).map((item) => {
+  //           result.push({
+  //             difficulty,
+  //             spec: item,
+  //             uploadDate: uploadDateInfo[item],
+  //           } as SpecWishlistUploadInfo);
+  //         });
+  //       }
+  //     });
+
+  //     return result;
+  //   }),
 });
