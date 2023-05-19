@@ -9,7 +9,7 @@ import {
 } from "@mantine/core";
 import { useState } from "react";
 import moment from "moment";
-import { DataGrid, useDataGrid } from "mantine-data-grid";
+import { DataGrid } from "mantine-data-grid";
 import { type Difficulty, DifficultySchema } from "~/types"
 
 const Home: NextPage = () => {
