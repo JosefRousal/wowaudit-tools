@@ -1,15 +1,18 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { type Difficulty } from "../../../types";
+import { type Difficulty } from "~/types";
 import getWishlists from "~/wowaudit/characters/get-wishlists";
 
 type CharacterWishlistUploadInfo = {
   characterName: string;
-  difficulty: Difficulty;
   spec: string;
-  uploadDate: Date | null;
+  normal: Date | null;
+  heroic: Date | null;
+  mythic: Date | null;
 };
+
+const difficulties: Difficulty[] = ["normal", "heroic", "mythic"];
 
 export const wishlistRouter = createTRPCRouter({
   allCharacterWishlistUploadInfo: publicProcedure
@@ -20,32 +23,42 @@ export const wishlistRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       const data = await getWishlists();
-      const result: CharacterWishlistUploadInfo[] = [];
+      const resultMap = new Map<string, CharacterWishlistUploadInfo>();
 
       data.map((character) => {
         const currentTierInfo = character.wishlists
           .find((x) => x.name === input.wishlistName ?? "Overall")
           ?.instances.find((x) => x.id === 17);
 
-        ["normal", "heroic", "mythic"].map((difficulty) => {
+        difficulties.map((difficulty) => {
           const difficultyInfo = currentTierInfo?.difficulties.find(
             (x) => x.difficulty === difficulty
           );
+          if (!difficultyInfo) return;
           const uploadDateInfo =
-            difficultyInfo?.wishlist.wishlist.report_uploaded_at;
+            difficultyInfo.wishlist.wishlist.report_uploaded_at;
           if (uploadDateInfo) {
             Object.keys(uploadDateInfo).map((item) => {
-              result.push({
-                characterName: character.name,
-                difficulty,
-                spec: item,
-                uploadDate: uploadDateInfo[item],
-              } as CharacterWishlistUploadInfo);
+              const difficultyDate = uploadDateInfo[item];
+              if (!difficultyDate) return;
+              const existing = resultMap.get(character.name);
+              if (!existing) {
+                resultMap.set(character.name, {
+                  characterName: character.name,
+                  spec: item,
+                  [difficulty]: difficultyDate,
+                } as CharacterWishlistUploadInfo);
+              } else {
+                existing[difficulty] = difficultyDate;
+              }
             });
           }
         });
       });
 
-      return result;
+      return Array.from<
+        [string, CharacterWishlistUploadInfo],
+        CharacterWishlistUploadInfo
+      >(resultMap, ([_, uploadInfo]) => uploadInfo);
     }),
 });
