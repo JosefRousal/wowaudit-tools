@@ -1,5 +1,9 @@
 import { type NextRouter } from "next/router";
-import { IconChecklist, IconGift } from "@tabler/icons-react";
+import {
+  IconChartArrowsVertical,
+  IconChecklist,
+  IconGift,
+} from "@tabler/icons-react";
 
 export const actions = [
   {
@@ -8,10 +12,15 @@ export const actions = [
     icon: <IconChecklist />,
   },
   {
-    title: 'Wishlist',
-    route: '/wishlist',
-    icon: <IconGift />
-  }
+    title: "Wishlist",
+    route: "/wishlist",
+    icon: <IconGift />,
+  },
+  {
+    title: "Tier Set Dps",
+    route: "/tier-sims",
+    icon: <IconChartArrowsVertical />,
+  },
 ];
 
 export const spotlightActions = (router: NextRouter) =>
