@@ -3,6 +3,10 @@
     {
       "path": "/api/load-class-spec-info",
       "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/load-tier-sim-data",
+      "schedule": "0 5 * * *"
     }
   ]
 }

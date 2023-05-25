@@ -15,15 +15,31 @@ model Class {
     id              Int              @id
     name            String
     specializations Specialization[]
+    TierDpsSimData  TierDpsSimData[]
 
     @@map("classes")
 }
 
 model Specialization {
-    id      Int    @id
-    classId Int
-    class   Class  @relation(fields: [classId], references: [id])
-    name    String
+    id             Int              @id
+    classId        Int
+    class          Class            @relation(fields: [classId], references: [id])
+    name           String
+    TierDpsSimData TierDpsSimData[]
 
     @@map("specializations")
+}
+
+model TierDpsSimData {
+    classId          Int
+    specializationId Int
+    twoPiece         Decimal
+    fourPiece        Decimal
+    noTier           Decimal
+
+    class          Class          @relation(fields: [classId], references: [id])
+    specialization Specialization @relation(fields: [specializationId], references: [id])
+
+    @@id([classId, specializationId])
+    @@map("tier_dps_sim_data")
 }
