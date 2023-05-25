@@ -21,7 +21,18 @@ export default async function handler(
     locale: "en_US",
     token: "",
   });
-  const rosterResponse = await wowClient.guild({
+  const rosterResponse = await wowClient.guild<{
+    members: {
+      character: {
+        id: number;
+        name: string;
+        playable_class: {
+          id: number;
+        };
+      };
+      rank: number;
+    }[];
+  }>({
     realm: "sargeras",
     name: "intimidation",
     resource: "roster",
