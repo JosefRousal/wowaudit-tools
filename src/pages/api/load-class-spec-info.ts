@@ -1,25 +1,3 @@
-/*
-
-  
-  const result: { className: string; specName: string }[] = [];
-  for (const playableClass of classes) {
-    const singleClassResponse = await wowClient.playableClass({
-      id: playableClass.id,
-    });
-    if (classResponse.status !== 200) continue;
-    const singleClass = PlayableClassResponseSchema.parse(
-      singleClassResponse.data
-    );
-    for (const specialization of singleClass.specializations) {
-      result.push({
-        className: singleClass.name,
-        specName: specialization.name,
-      });
-    }
-  }
-  return result;
-  */
-
 import { wow } from "blizzard.js";
 import type { NextApiRequest, NextApiResponse } from "next";
 import {

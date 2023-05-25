@@ -1,44 +1,17 @@
-import { env } from "~/env.mjs";
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { wow } from "blizzard.js";
-import {
-  PlayableClassIndexResponseSchema,
-  PlayableClassResponseSchema,
-} from "~/battlenet/types";
-import getSpecTierSims from "~/bloodmallet/get-spec-tier-sims";
-
-const getClassSpecMap = async () => {
-  const wowClient = await wow.createInstance({
-    key: env.BATTLENET_CLIENT_ID,
-    secret: env.BATTLENET_CLIENT_SECRET,
-    origin: "us",
-    locale: "en_US",
-    token: "",
-  });
-  const classResponse = await wowClient.playableClass();
-  if (classResponse.status !== 200) return null;
-  const classes = PlayableClassIndexResponseSchema.parse(classResponse.data);
-  const result: { className: string; specName: string }[] = [];
-  for (const playableClass of classes) {
-    const singleClassResponse = await wowClient.playableClass({
-      id: playableClass.id,
-    });
-    if (classResponse.status !== 200) continue;
-    const singleClass = PlayableClassResponseSchema.parse(
-      singleClassResponse.data
-    );
-    for (const specialization of singleClass.specializations) {
-      result.push({
-        className: singleClass.name,
-        specName: specialization.name,
-      });
-    }
-  }
-  return result;
-};
+import { prisma } from "~/server/db";
 
 export const tierSimsRouter = createTRPCRouter({
   allTierSims: publicProcedure.query(async () => {
+    const data = await prisma.tierDpsSimData.findMany({
+      include: {
+        class: true,
+        specialization: true,
+      },
+    });
     const results: {
       className: string;
       spec: string;
@@ -49,27 +22,19 @@ export const tierSimsRouter = createTRPCRouter({
       noVsFour?: number;
       twoVsFour?: number;
     }[] = [];
-    const classSpecMap = await getClassSpecMap();
-    if (!classSpecMap) return null;
-    for (const classSpec of classSpecMap) {
-      const simData = await getSpecTierSims(
-        classSpec.className.toLocaleLowerCase().replaceAll(" ", "_"),
-        classSpec.specName.toLocaleLowerCase().replaceAll(" ", "_")
-      );
-      if (!simData) continue;
-      const twoPiece = simData?.data.T30.twoPiece;
-      const fourPiece = simData?.data.T30.fourPiece;
-      const noTier = simData?.data.T30.noTier;
+    for (const row of data) {
+      const twoPiece = row.twoPiece.toNumber();
+      const fourPiece = row.fourPiece.toNumber();
+      const noTier = row.noTier.toNumber();
       results.push({
-        className: classSpec.className,
-        spec: classSpec.specName,
-        twoPiece,
-        fourPiece,
-        noTier,
-        noVsTwo: twoPiece && noTier && ((twoPiece - noTier) / noTier),
-        noVsFour: fourPiece && noTier && ((fourPiece - noTier) / noTier),
-        twoVsFour:
-          twoPiece && fourPiece && ((fourPiece - twoPiece) / twoPiece),
+        className: row.class.name,
+        spec: row.specialization.name,
+        twoPiece: twoPiece,
+        fourPiece: fourPiece,
+        noTier: noTier,
+        noVsTwo: twoPiece && noTier && (twoPiece - noTier) / noTier,
+        noVsFour: fourPiece && noTier && (fourPiece - noTier) / noTier,
+        twoVsFour: twoPiece && fourPiece && (fourPiece - twoPiece) / twoPiece,
       });
     }
     return results;
