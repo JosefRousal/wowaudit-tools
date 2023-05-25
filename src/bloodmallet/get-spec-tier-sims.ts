@@ -11,7 +11,7 @@ export default async function getSpecTierSims(
   try {
     return SpecTierSimSchema.parse(json);
   } catch (e) {
-    // console.log(className, specName, json);
+    console.warn("Failed to query spec sim data", className, specName, json);
   }
   return null;
 }
