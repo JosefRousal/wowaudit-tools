@@ -1,12 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { wow } from "blizzard.js";
 import type { NextApiRequest, NextApiResponse } from "next";
-import {
-  PlayableClassIndexResponseSchema,
-  PlayableClassResponseSchema,
-} from "~/battlenet/types";
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 
@@ -42,6 +35,7 @@ export default async function handler(
   for (const item of rosterResponse.data.members) {
     const rank = item.rank;
     const character = item.character;
+    if (![1, 3, 4].find((x) => x === rank)) continue;
     await prisma.character.upsert({
       where: {
         id: character.id,
@@ -59,4 +53,6 @@ export default async function handler(
       },
     });
   }
+  response.status(200);
+  response.end();
 }

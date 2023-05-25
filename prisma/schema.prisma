@@ -21,21 +21,23 @@ model Class {
 }
 
 model Specialization {
-    id             Int              @id
-    classId        Int
-    class          Class            @relation(fields: [classId], references: [id])
-    name           String
-    TierDpsSimData TierDpsSimData[]
+    id                 Int                  @id
+    classId            Int
+    class              Class                @relation(fields: [classId], references: [id])
+    name               String
+    TierDpsSimData     TierDpsSimData[]
+    WishlistUploadInfo WishlistUploadInfo[]
 
     @@map("specializations")
 }
 
 model Character {
-    id        Int    @id
-    name      String
-    guildRank Int
-    classId   Int
-    class     Class  @relation(fields: [classId], references: [id])
+    id                 Int                  @id
+    name               String
+    guildRank          Int
+    classId            Int
+    class              Class                @relation(fields: [classId], references: [id])
+    WishlistUploadInfo WishlistUploadInfo[]
 }
 
 model TierDpsSimData {
@@ -46,4 +48,17 @@ model TierDpsSimData {
     specialization   Specialization @relation(fields: [specializationId], references: [id])
 
     @@map("tier_dps_sim_data")
+}
+
+model WishlistUploadInfo {
+    characterId      Int
+    specializationId Int
+    normal           DateTime?
+    heroic           DateTime?
+    mythic           DateTime?
+
+    character      Character      @relation(fields: [characterId], references: [id])
+    specialization Specialization @relation(fields: [specializationId], references: [id])
+
+    @@id([characterId, specializationId])
 }

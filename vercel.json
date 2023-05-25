@@ -7,11 +7,14 @@
     {
       "path": "/api/cron/load-tier-sim-data",
       "schedule": "0 5 * * *"
-    }
-    ,
+    },
     {
       "path": "/api/cron/load-characters",
       "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron/load-wishlist-upload-dates",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

@@ -22,7 +22,6 @@ export default async function handler(
   if (classResponse.status !== 200) return null;
   const classes = PlayableClassIndexResponseSchema.parse(classResponse.data);
   for (const playableClass of classes) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     await prisma.class.upsert({
       where: { id: playableClass.id },
       update: { name: playableClass.name },
@@ -40,7 +39,6 @@ export default async function handler(
       singleClassResponse.data
     );
     for (const specialization of singleClass.specializations) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       await prisma.specialization.upsert({
         where: { id: specialization.id },
         update: {

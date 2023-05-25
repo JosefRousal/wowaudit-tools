@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { prisma } from "~/server/db";
 import { type Difficulty } from "~/types";
 import getWishlists from "~/wowaudit/characters/get-wishlists";
 
@@ -16,49 +17,23 @@ const difficulties: Difficulty[] = ["normal", "heroic", "mythic"];
 
 export const wishlistRouter = createTRPCRouter({
   allCharacterWishlistUploadInfo: publicProcedure
-    .input(
-      z.object({
-        wishlistName: z.string().nullable(),
-      })
-    )
-    .query(async ({ input }) => {
-      const data = await getWishlists();
-      const resultMap = new Map<string, CharacterWishlistUploadInfo>();
+    .query(async () => {
+      // const data = await getWishlists();
+      // const resultMap = new Map<string, CharacterWishlistUploadInfo>();
 
-      data.map((character) => {
-        const currentTierInfo = character.wishlists
-          .find((x) => x.name === input.wishlistName ?? "Overall")
-          ?.instances.find((x) => x.id === 17);
-
-        difficulties.map((difficulty) => {
-          const difficultyInfo = currentTierInfo?.difficulties.find(
-            (x) => x.difficulty === difficulty
-          );
-          if (!difficultyInfo) return;
-          const uploadDateInfo =
-            difficultyInfo.wishlist.wishlist.report_uploaded_at;
-          if (uploadDateInfo) {
-            Object.keys(uploadDateInfo).map((item) => {
-              const difficultyDate = uploadDateInfo[item];
-              if (!difficultyDate) return;
-              const existing = resultMap.get(character.name);
-              if (!existing) {
-                resultMap.set(character.name, {
-                  characterName: character.name,
-                  spec: item,
-                  [difficulty]: difficultyDate,
-                } as CharacterWishlistUploadInfo);
-              } else {
-                existing[difficulty] = difficultyDate;
-              }
-            });
-          }
-        });
+      const data = await prisma.wishlistUploadInfo.findMany({
+        include: {
+          character: true,
+          specialization: true
+        }
       });
-
-      return Array.from<
-        [string, CharacterWishlistUploadInfo],
-        CharacterWishlistUploadInfo
-      >(resultMap, ([_, uploadInfo]) => uploadInfo);
+    
+      return data.map(item => ({
+         characterName: item.character.name,
+         spec: item.specialization.name,
+         normal: item.normal,
+         heroic: item.heroic,
+         mythic: item.mythic
+      } as CharacterWishlistUploadInfo))
     }),
 });

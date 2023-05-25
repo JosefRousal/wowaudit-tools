@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { NextApiRequest, NextApiResponse } from "next";
 import getSpecTierSims from "~/bloodmallet/get-spec-tier-sims";
 import { prisma } from "~/server/db";
@@ -30,7 +26,7 @@ export default async function handler(
     const noTier = simData?.data.T30.noTier;
     await prisma.tierDpsSimData.upsert({
       where: {
-        specializationId: specialization.id
+        specializationId: specialization.id,
       },
       create: {
         specializationId: specialization.id,
