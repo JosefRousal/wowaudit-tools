@@ -30,13 +30,9 @@ export default async function handler(
     const noTier = simData?.data.T30.noTier;
     await prisma.tierDpsSimData.upsert({
       where: {
-        classId_specializationId: {
-          classId: specialization.classId,
-          specializationId: specialization.id,
-        },
+        specializationId: specialization.id
       },
       create: {
-        classId: specialization.classId,
         specializationId: specialization.id,
         twoPiece,
         fourPiece,
