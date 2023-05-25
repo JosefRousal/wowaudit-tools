@@ -8,8 +8,11 @@ export const tierSimsRouter = createTRPCRouter({
   allTierSims: publicProcedure.query(async () => {
     const data = await prisma.tierDpsSimData.findMany({
       include: {
-        class: true,
-        specialization: true,
+        specialization: {
+          include: {
+            class: true,
+          },
+        },
       },
     });
     const results: {
@@ -27,7 +30,7 @@ export const tierSimsRouter = createTRPCRouter({
       const fourPiece = row.fourPiece.toNumber();
       const noTier = row.noTier.toNumber();
       results.push({
-        className: row.class.name,
+        className: row.specialization.class.name,
         spec: row.specialization.name,
         twoPiece: twoPiece,
         fourPiece: fourPiece,
