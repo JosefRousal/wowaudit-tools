@@ -20,7 +20,7 @@ export const wishlistRouter = createTRPCRouter({
     .query(async () => {
       // const data = await getWishlists();
       // const resultMap = new Map<string, CharacterWishlistUploadInfo>();
-
+      console.log('hello')
       const data = await prisma.wishlistUploadInfo.findMany({
         include: {
           character: true,
