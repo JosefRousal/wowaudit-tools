@@ -97,4 +97,16 @@ export default async function handler() {
       }
     }
   }
+  await prisma.syncHistory.upsert({
+    where: {
+      reportName: "wishlist-upload-dates",
+    },
+    create: {
+      reportName: "wishlist-upload-dates",
+      timestamp: new Date(),
+    },
+    update: {
+      timestamp: new Date(),
+    },
+  });
 }

@@ -10,24 +10,33 @@ type CharacterWishlistUploadInfo = {
 };
 
 export const wishlistRouter = createTRPCRouter({
-  allCharacterWishlistUploadInfo: publicProcedure
-    .query(async () => {
-      // const data = await getWishlists();
-      // const resultMap = new Map<string, CharacterWishlistUploadInfo>();
-      console.log('hello')
-      const data = await prisma.wishlistUploadInfo.findMany({
-        include: {
-          character: true,
-          specialization: true
-        }
-      });
-    
-      return data.map(item => ({
-         characterName: item.character.name,
-         spec: item.specialization.name,
-         normal: item.normal,
-         heroic: item.heroic,
-         mythic: item.mythic
-      } as CharacterWishlistUploadInfo))
-    }),
+  allCharacterWishlistUploadInfo: publicProcedure.query(async () => {
+    // const data = await getWishlists();
+    // const resultMap = new Map<string, CharacterWishlistUploadInfo>();
+    console.log("hello");
+    const data = await prisma.wishlistUploadInfo.findMany({
+      include: {
+        character: true,
+        specialization: true,
+      },
+    });
+
+    return data.map(
+      (item) =>
+        ({
+          characterName: item.character.name,
+          spec: item.specialization.name,
+          normal: item.normal,
+          heroic: item.heroic,
+          mythic: item.mythic,
+        } as CharacterWishlistUploadInfo)
+    );
+  }),
+  getLastSyncDate: publicProcedure.query(async () => {
+    return await prisma.syncHistory.findFirst({
+      where: {
+        reportName: "wishlist-upload-dates",
+      },
+    });
+  }),
 });

@@ -1,17 +1,32 @@
 import { type NextPage } from "next";
 import { api } from "~/utils/api";
-import {
-  Container,
-} from "@mantine/core";
+import { Container, Group, Space } from "@mantine/core";
 import moment from "moment";
 import { DataGrid } from "mantine-data-grid";
+import LastSyncDate from "~/components/LastSyncDate";
+
+const LastSyncDateWrapper = () => {
+  const lastUpdateQuery = api.wishlist.getLastSyncDate.useQuery();
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  return (
+    <LastSyncDate
+      isLoading={lastUpdateQuery.isLoading}
+      isError={lastUpdateQuery.isError}
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      date={lastUpdateQuery.data?.timestamp}
+    />
+  );
+};
 
 const Home: NextPage = () => {
-
   const query = api.wishlist.allCharacterWishlistUploadInfo.useQuery();
 
   return (
     <Container fluid>
+      <Group>
+        Last Sync: <LastSyncDateWrapper />
+      </Group>
+      <Space h="md" />
       <DataGrid
         data={query.data ?? []}
         loading={query.isLoading}

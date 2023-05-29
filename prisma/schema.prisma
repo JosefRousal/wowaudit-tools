@@ -62,3 +62,8 @@ model WishlistUploadInfo {
 
     @@id([characterId, specializationId])
 }
+
+model SyncHistory {
+    reportName String   @id
+    timestamp  DateTime
+}

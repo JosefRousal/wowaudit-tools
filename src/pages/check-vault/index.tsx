@@ -1,12 +1,7 @@
 import { type NextPage } from "next";
 import { api } from "~/utils/api";
 import { useState } from "react";
-import {
-  Container,
-  Group,
-  Select,
-  Space,
-} from "@mantine/core";
+import { Container, Group, Select, Space } from "@mantine/core";
 import { DataGrid } from "mantine-data-grid";
 
 const getCurrentWeek = () => {
@@ -72,7 +67,7 @@ const Home: NextPage = () => {
             {
               accessorFn: (row) => row.vaultOne,
               header: "Vault One",
-              enableColumnFilter: true
+              enableColumnFilter: true,
             },
             {
               accessorFn: (row) => row.vaultTwo,

@@ -37,4 +37,16 @@ export default async function handler() {
       },
     });
   }
+  await prisma.syncHistory.upsert({
+    where: {
+      reportName: "tier-sim-data",
+    },
+    create: {
+      reportName: "tier-sim-data",
+      timestamp: new Date(),
+    },
+    update: {
+      timestamp: new Date(),
+    },
+  });
 }
