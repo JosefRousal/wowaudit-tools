@@ -1,5 +1,4 @@
 import { wow } from "blizzard.js";
-import type { NextApiRequest, NextApiResponse } from "next";
 import {
   PlayableClassIndexResponseSchema,
   PlayableClassResponseSchema,
@@ -7,10 +6,7 @@ import {
 import { env } from "~/env.mjs";
 import { prisma } from "~/server/db";
 
-export default async function handler(
-  request: NextApiRequest,
-  response: NextApiResponse
-) {
+export default async function handler() {
   const wowClient = await wow.createInstance({
     key: env.BATTLENET_CLIENT_ID,
     secret: env.BATTLENET_CLIENT_SECRET,

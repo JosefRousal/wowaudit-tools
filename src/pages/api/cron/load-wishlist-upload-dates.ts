@@ -1,5 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import getSpecTierSims from "~/bloodmallet/get-spec-tier-sims";
 import { prisma } from "~/server/db";
 import { type Difficulty } from "~/types";
 import getWishlists from "~/wowaudit/characters/get-wishlists";
@@ -7,10 +5,7 @@ import getWishlists from "~/wowaudit/characters/get-wishlists";
 const difficulties: Difficulty[] = ["normal", "heroic", "mythic"];
 const wishlistName = "Single Target - Max Upgrades";
 
-export default async function handler(
-  request: NextApiRequest,
-  response: NextApiResponse
-) {
+export default async function handler() {
   const characters = await prisma.character.findMany({
     include: {
       class: {
@@ -102,7 +97,4 @@ export default async function handler(
       }
     }
   }
-
-  response.status(200);
-  response.end();
 }

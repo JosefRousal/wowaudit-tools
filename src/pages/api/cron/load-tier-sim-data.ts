@@ -1,11 +1,7 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import getSpecTierSims from "~/bloodmallet/get-spec-tier-sims";
 import { prisma } from "~/server/db";
 
-export default async function handler(
-  request: NextApiRequest,
-  response: NextApiResponse
-) {
+export default async function handler() {
   const specializations = await prisma.specialization.findMany({
     include: {
       class: true,

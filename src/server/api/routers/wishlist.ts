@@ -1,9 +1,5 @@
-import { z } from "zod";
-
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
-import { type Difficulty } from "~/types";
-import getWishlists from "~/wowaudit/characters/get-wishlists";
 
 type CharacterWishlistUploadInfo = {
   characterName: string;
@@ -12,8 +8,6 @@ type CharacterWishlistUploadInfo = {
   heroic: Date | null;
   mythic: Date | null;
 };
-
-const difficulties: Difficulty[] = ["normal", "heroic", "mythic"];
 
 export const wishlistRouter = createTRPCRouter({
   allCharacterWishlistUploadInfo: publicProcedure
