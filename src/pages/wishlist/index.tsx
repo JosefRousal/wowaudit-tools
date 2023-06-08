@@ -24,7 +24,7 @@ const Home: NextPage = () => {
   return (
     <Container fluid>
       <Group>
-        Last Sync: <LastSyncDateWrapper />
+        Last Sync <LastSyncDateWrapper />
       </Group>
       <Space h="md" />
       <DataGrid

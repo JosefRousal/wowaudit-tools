@@ -1,4 +1,4 @@
-import { Loader, Text } from "@mantine/core";
+import { Code, Loader } from "@mantine/core";
 
 const LastSyncDate = (props: {
   isLoading: boolean;
@@ -6,11 +6,11 @@ const LastSyncDate = (props: {
   date?: Date;
 }) => {
   if (props.isLoading) return <Loader />;
-  if (props.isError) return <Text variant="text">Error</Text>;
+  if (props.isError) return <Code>Error</Code>;
   if (props.date)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-    return <Text>{props.date?.toDateString()}</Text>;
-  return <Text>never</Text>;
+    return <Code>{props.date?.toString()}</Code>;
+  return <Code>never</Code>;
 };
 
 export default LastSyncDate;

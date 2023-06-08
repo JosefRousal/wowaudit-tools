@@ -17,9 +17,11 @@ export default async function handler() {
       .replaceAll(" ", "_");
     const simData = await getSpecTierSims(className, specName);
     if (!simData) continue;
-    const twoPiece = simData?.data.T30.twoPiece;
-    const fourPiece = simData?.data.T30.fourPiece;
-    const noTier = simData?.data.T30.noTier;
+    const t30 = simData.data.T30;
+    if (!t30) continue;
+    const twoPiece = t30.twoPiece;
+    const fourPiece = t30.fourPiece;
+    const noTier = t30.noTier;
     await prisma.tierDpsSimData.upsert({
       where: {
         specializationId: specialization.id,
