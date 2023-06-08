@@ -7,6 +7,9 @@ import "~/styles/globals.css";
 import { useRouter } from "next/router";
 import AppLayout from "~/components/layout/AppLayout";
 import { spotlightActions } from "~/components/actions";
+import LogRocket from 'logrocket';
+
+LogRocket.init('dpzgrl/wowaudit-tools');
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const router = useRouter();
