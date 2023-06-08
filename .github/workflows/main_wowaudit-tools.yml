@@ -21,6 +21,10 @@ jobs:
         with:
           node-version: '18.x'
 
+      - name: set environment variables
+        run: |
+          set 
+
       - name: npm install, build, and test
         run: |
           npm install
