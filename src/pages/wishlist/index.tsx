@@ -8,14 +8,14 @@ import LastSyncDate from "~/components/LastSyncDate";
 const Home: NextPage = () => {
   const utils = api.useContext();
   const query = api.wishlist.allCharacterWishlistUploadInfo.useQuery();
-  const refreshMutation = api.wishlist.refreshData.useMutation({
+  const refreshData = api.wishlist.refreshData.useMutation({
     async onSettled() {
       await utils.wishlist.allCharacterWishlistUploadInfo.invalidate();
     },
   });
 
-  const isLoading = query.isLoading || refreshMutation.isLoading;
-  const isError = query.isError || refreshMutation.isError;
+  const isLoading = query.isLoading || refreshData.isLoading;
+  const isError = query.isError || refreshData.isError;
 
   return (
     <Container fluid>
@@ -28,7 +28,7 @@ const Home: NextPage = () => {
             date={query.data?.lastSyncDate}
           />
         )}
-        <Button onClick={() => refreshMutation.mutate()} disabled={isLoading}>
+        <Button onClick={() => refreshData.mutate()} disabled={isLoading}>
           {isLoading ? <Loader /> : <span>Refresh</span>}
         </Button>
       </Group>
