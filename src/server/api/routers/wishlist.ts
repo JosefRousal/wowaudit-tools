@@ -1,6 +1,6 @@
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
-import loadClassSpecInfo from "../loadClassSpecInfo";
+import loadWishlistUploadDates from "../loadWishlistUploadDates";
 
 type CharacterWishlistUploadInfo = {
   characterName: string;
@@ -40,6 +40,6 @@ export const wishlistRouter = createTRPCRouter({
     };
   }),
   refreshData: publicProcedure.mutation(async () => {
-    await loadClassSpecInfo();
+    await loadWishlistUploadDates();
   }),
 });
