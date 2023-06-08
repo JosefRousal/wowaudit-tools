@@ -1,5 +1,6 @@
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { prisma } from "~/server/db";
+import refreshWishlistUploadDates from "~/pages/api/cron/load-wishlist-upload-dates";
 
 type CharacterWishlistUploadInfo = {
   characterName: string;
@@ -11,9 +12,6 @@ type CharacterWishlistUploadInfo = {
 
 export const wishlistRouter = createTRPCRouter({
   allCharacterWishlistUploadInfo: publicProcedure.query(async () => {
-    // const data = await getWishlists();
-    // const resultMap = new Map<string, CharacterWishlistUploadInfo>();
-    console.log("hello");
     const data = await prisma.wishlistUploadInfo.findMany({
       include: {
         character: true,
@@ -21,22 +19,27 @@ export const wishlistRouter = createTRPCRouter({
       },
     });
 
-    return data.map(
-      (item) =>
-        ({
-          characterName: item.character.name,
-          spec: item.specialization.name,
-          normal: item.normal,
-          heroic: item.heroic,
-          mythic: item.mythic,
-        } as CharacterWishlistUploadInfo)
-    );
-  }),
-  getLastSyncDate: publicProcedure.query(async () => {
-    return await prisma.syncHistory.findFirst({
+    const syncHistory = await prisma.syncHistory.findFirst({
       where: {
         reportName: "wishlist-upload-dates",
       },
     });
+
+    return {
+      lastSyncDate: syncHistory?.timestamp,
+      data: data.map(
+        (item) =>
+          ({
+            characterName: item.character.name,
+            spec: item.specialization.name,
+            normal: item.normal,
+            heroic: item.heroic,
+            mythic: item.mythic,
+          } as CharacterWishlistUploadInfo)
+      ),
+    };
+  }),
+  refreshData: publicProcedure.mutation(async () => {
+    await refreshWishlistUploadDates();
   }),
 });

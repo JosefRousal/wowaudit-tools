@@ -1,34 +1,40 @@
 import { type NextPage } from "next";
 import { api } from "~/utils/api";
-import { Container, Group, Space } from "@mantine/core";
+import { Button, Container, Group, Loader, Space } from "@mantine/core";
 import moment from "moment";
 import { DataGrid } from "mantine-data-grid";
 import LastSyncDate from "~/components/LastSyncDate";
 
-const LastSyncDateWrapper = () => {
-  const lastUpdateQuery = api.wishlist.getLastSyncDate.useQuery();
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  return (
-    <LastSyncDate
-      isLoading={lastUpdateQuery.isLoading}
-      isError={lastUpdateQuery.isError}
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      date={lastUpdateQuery.data?.timestamp}
-    />
-  );
-};
-
 const Home: NextPage = () => {
+  const utils = api.useContext();
   const query = api.wishlist.allCharacterWishlistUploadInfo.useQuery();
+  const refreshMutation = api.wishlist.refreshData.useMutation({
+    async onSettled() {
+      await utils.wishlist.allCharacterWishlistUploadInfo.invalidate();
+    },
+  });
+
+  const isLoading = query.isLoading || refreshMutation.isLoading;
+  const isError = query.isError || refreshMutation.isError;
 
   return (
     <Container fluid>
       <Group>
-        Last Sync <LastSyncDateWrapper />
+        <span>Last Sync</span>
+        {!isLoading && (
+          <LastSyncDate
+            isLoading={isLoading}
+            isError={isError}
+            date={query.data?.lastSyncDate}
+          />
+        )}
+        <Button onClick={() => refreshMutation.mutate()} disabled={isLoading}>
+          {isLoading ? <Loader /> : <span>Refresh</span>}
+        </Button>
       </Group>
       <Space h="md" />
       <DataGrid
-        data={query.data ?? []}
+        data={query.data?.data ?? []}
         loading={query.isLoading}
         withBorder
         columns={[
