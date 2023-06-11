@@ -6,8 +6,7 @@ import {
 import { env } from "~/env.mjs";
 import upsert from "../drizzle/upsert";
 import { eq } from "drizzle-orm";
-import classes from "../drizzle/schema/classes";
-import specializations from "../drizzle/schema/specializations";
+import { classes, specializations } from "~/server/drizzle/schema";
 
 export default async function loadClassSpecInfo() {
   const wowClient = await wow.createInstance({

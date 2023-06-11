@@ -1,5 +1,5 @@
 import { createTRPCRouter } from "~/server/api/trpc";
-import { checkVaultRouter } from "./routers/check-vault";
+import { checkVaultRouter } from "./routers/checkVault";
 import { wishlistRouter } from "./routers/wishlist";
 
 /**

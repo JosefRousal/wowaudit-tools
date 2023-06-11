@@ -1,13 +1,15 @@
 import { type Difficulty } from "~/types";
 import getWishlists from "~/wowaudit/characters/get-wishlists";
 import db from "../drizzle/db";
-import wishlistUploads from "../drizzle/schema/wishlistUploads";
+import {
+  characters,
+  classes,
+  specializations,
+  wishlistUploads,
+  syncHistory,
+} from "~/server/drizzle/schema";
 import { and, eq } from "drizzle-orm";
-import specializations from "../drizzle/schema/specializations";
-import characters from "../drizzle/schema/characters";
-import classes from "../drizzle/schema/classes";
 import upsert from "../drizzle/upsert";
-import syncHistory from "../drizzle/schema/syncHistory";
 
 const difficulties: Difficulty[] = ["normal", "heroic", "mythic"];
 const wishlistName = "Single Target - Max Upgrades";

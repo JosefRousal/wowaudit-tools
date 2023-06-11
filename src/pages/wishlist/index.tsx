@@ -25,7 +25,7 @@ const Home: NextPage = () => {
           <LastSyncDate
             isLoading={isLoading}
             isError={isError}
-            date={query.data?.lastSyncDate}
+            date={query.data?.lastSyncDate ?? null}
           />
         )}
         <Button onClick={() => refreshData.mutate()} disabled={isLoading}>

@@ -1,11 +1,13 @@
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import loadWishlistUploadDates from "../loadWishlistUploadDates";
 import db from "~/server/drizzle/db";
-import specializations from "~/server/drizzle/schema/specializations";
 import { eq } from "drizzle-orm";
-import syncHistory from "~/server/drizzle/schema/syncHistory";
-import wishlistUploads from "~/server/drizzle/schema/wishlistUploads";
-import characters from "~/server/drizzle/schema/characters";
+import {
+  wishlistUploads,
+  characters,
+  specializations,
+  syncHistory
+} from "~/server/drizzle/schema";
 
 type CharacterWishlistUploadInfo = {
   characterName: string;
