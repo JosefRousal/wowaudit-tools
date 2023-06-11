@@ -3,7 +3,7 @@ import { Code, Loader } from "@mantine/core";
 const LastSyncDate = (props: {
   isLoading: boolean;
   isError: boolean;
-  date?: Date;
+  date?: Date | null;
 }) => {
   if (props.isLoading) return <Loader />;
   if (props.isError) return <Code>Error</Code>;
