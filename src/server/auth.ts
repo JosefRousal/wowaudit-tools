@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import type { NextAuthOptions, DefaultSession } from "next-auth";
 import BattleNetProvider from "next-auth/providers/battlenet";
 import { env } from "~/env.mjs";
+import db from "./drizzle/db";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -45,10 +46,10 @@ export const authOptions: NextAuthOptions = {
         },
       };
     },
-    signIn({ user }) {
-      const allowedIds = ["rousal#1337", "dangmidnight#1745"];
+    async signIn({ user }) {
+      const allowedIds = await db.query.allowedUsers.findMany();
       if (!user.name) return false;
-      return !!allowedIds.find((x) => x === user.name?.toLowerCase());
+      return !!allowedIds.find((x) => x.name === user.name?.toLowerCase());
     },
   },
   providers: [

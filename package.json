@@ -8,7 +8,7 @@
     "postinstall": "prisma generate",
     "lint": "next lint",
     "start": "next start",
-    "db:generate": "drizzle-kit generate:pg --schema ./src/server/drizzle/schema --out ./src/server/drizzle/migrations",
+    "db:generate": "drizzle-kit generate:pg --schema ./src/server/drizzle/schema.ts --out ./src/server/drizzle/migrations",
     "db:push": "drizzle-kit push:pg"
   },
   "dependencies": {
