@@ -1,11 +1,24 @@
 import { type NextPage } from "next";
 import { api } from "~/utils/api";
-import { Button, Container, Group, Loader, Space, Table } from "@mantine/core";
+import {
+  Button,
+  Container,
+  Group,
+  Loader,
+  Mark,
+  Space,
+  Table,
+} from "@mantine/core";
 import moment from "moment";
 import LastSyncDate from "~/components/LastSyncDate";
 
-const mapDateValue = (value: Date | null | undefined) =>
-  value ? moment(value.toISOString()).fromNow() : "";
+const mapDateValue = (value: Date | null | undefined) => {
+  if (!value) return <Mark>never</Mark>;
+  const m = moment(value.toISOString());
+  const d = moment().diff(m, "days");
+  const s = m.fromNow();
+  return d >= 7 ? <Mark>{s}</Mark> : s;
+};
 
 const Home: NextPage = () => {
   const utils = api.useContext();
