@@ -3,11 +3,10 @@ import { MantineProvider } from "@mantine/core";
 import { SpotlightProvider } from "@mantine/spotlight";
 import { Analytics } from "@vercel/analytics/react";
 import { api } from "~/utils/api";
-import "~/styles/globals.css";
 import { useRouter } from "next/router";
 import AppLayout from "~/components/layout/AppLayout";
 import { spotlightActions } from "~/components/actions";
-import { SessionProvider, signIn } from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
 import type { Session } from "next-auth";
 
 const MyApp: AppType<{ session: Session | null }> = ({

@@ -1,9 +1,11 @@
 import { type NextPage } from "next";
 import { api } from "~/utils/api";
-import { Button, Container, Group, Loader, Space } from "@mantine/core";
+import { Button, Container, Group, Loader, Space, Table } from "@mantine/core";
 import moment from "moment";
-import { DataGrid } from "mantine-data-grid";
 import LastSyncDate from "~/components/LastSyncDate";
+
+const mapDateValue = (value: Date | null | undefined) =>
+  value ? moment(value.toISOString()).fromNow() : "";
 
 const Home: NextPage = () => {
   const utils = api.useContext();
@@ -33,54 +35,28 @@ const Home: NextPage = () => {
         </Button>
       </Group>
       <Space h="md" />
-      <DataGrid
-        data={query.data?.data ?? []}
-        loading={query.isLoading}
-        withBorder
-        columns={[
-          {
-            accessorFn: (row) => row.characterName,
-            header: "Character",
-          },
-          {
-            accessorFn: (row) => row.spec,
-            header: "Spec",
-          },
-          {
-            accessorFn: (row) => row.normal,
-            header: "Normal",
-            cell: (cell) => {
-              const value = cell.getValue<Date | null>();
-              if (value) {
-                return moment(value.toISOString()).fromNow();
-              }
-              return "";
-            },
-          },
-          {
-            accessorFn: (row) => row.heroic,
-            header: "Heroic",
-            cell: (cell) => {
-              const value = cell.getValue<Date | null>();
-              if (value) {
-                return moment(value.toISOString()).fromNow();
-              }
-              return "";
-            },
-          },
-          {
-            accessorFn: (row) => row.mythic,
-            header: "Mythic",
-            cell: (cell) => {
-              const value = cell.getValue<Date | null>();
-              if (value) {
-                return moment(value.toISOString()).fromNow();
-              }
-              return "";
-            },
-          },
-        ]}
-      />
+      <Table>
+        <thead>
+          <tr>
+            <th>Character</th>
+            <th>Spec</th>
+            <th>Normal</th>
+            <th>Heroic</th>
+            <th>Mythic</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(query.data?.data ?? []).map((item, index) => (
+            <tr key={index}>
+              <td>{item.characterName}</td>
+              <td>{item.spec}</td>
+              <td>{mapDateValue(item.normal)}</td>
+              <td>{mapDateValue(item.heroic)}</td>
+              <td>{mapDateValue(item.mythic)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     </Container>
   );
 };
