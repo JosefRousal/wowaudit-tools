@@ -16,8 +16,6 @@
  */
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
-import { prisma } from "~/server/db";
-
 type CreateContextOptions = Record<string, never>;
 
 /**
@@ -31,9 +29,7 @@ type CreateContextOptions = Record<string, never>;
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
 const createInnerTRPCContext = (_opts: CreateContextOptions) => {
-  return {
-    prisma,
-  };
+  return {};
 };
 
 /**

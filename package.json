@@ -7,7 +7,9 @@
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "db:generate": "drizzle-kit generate:pg --schema ./src/server/drizzle/schema --out ./src/server/drizzle/migrations",
+    "db:push": "drizzle-kit push:pg"
   },
   "dependencies": {
     "@emotion/react": "^11.11.0",
@@ -38,11 +40,14 @@
     "@vercel/analytics": "^1.0.1",
     "blizzard.js": "^4.4.0",
     "dayjs": "^1.11.7",
+    "drizzle-orm": "^0.26.5",
     "embla-carousel-react": "^8.0.0-rc03",
     "logrocket": "^4.0.2",
+    "logrocket-react": "^5.0.1",
     "mantine-data-grid": "^0.2.1",
     "moment": "^2.29.4",
     "next": "^13.4.1",
+    "pg": "^8.11.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "superjson": "1.12.2",
@@ -50,14 +55,16 @@
   },
   "devDependencies": {
     "@types/eslint": "^8.21.3",
+    "@types/logrocket-react": "^3.0.0",
     "@types/node": "^18.15.5",
+    "@types/pg": "^8.10.2",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
+    "drizzle-kit": "^0.18.1",
     "eslint": "^8.36.0",
     "eslint-config-next": "^13.4.1",
-    "prisma": "^4.14.1",
     "typescript": "^5.0.2"
   },
   "ct3aMetadata": {

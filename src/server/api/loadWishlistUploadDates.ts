@@ -1,24 +1,120 @@
-import { prisma } from "~/server/db";
 import { type Difficulty } from "~/types";
 import getWishlists from "~/wowaudit/characters/get-wishlists";
+import db from "../drizzle/db";
+import wishlistUploads from "../drizzle/schema/wishlistUploads";
+import { and, eq } from "drizzle-orm";
+import specializations from "../drizzle/schema/specializations";
+import characters from "../drizzle/schema/characters";
+import classes from "../drizzle/schema/classes";
+import upsert from "../drizzle/upsert";
+import syncHistory from "../drizzle/schema/syncHistory";
 
 const difficulties: Difficulty[] = ["normal", "heroic", "mythic"];
 const wishlistName = "Single Target - Max Upgrades";
 
-export default async function loadWishlistUploadDates() {
-  const characters = await prisma.character.findMany({
-    include: {
-      class: {
-        include: {
-          specializations: true,
+const getCharacterData = async () => {
+  const characterDbData = await db
+    .select({
+      id: characters.id,
+      name: characters.name,
+      classId: classes.id,
+      className: classes.name,
+      specializationId: specializations.id,
+      specializationName: specializations.name,
+    })
+    .from(characters)
+    .innerJoin(classes, eq(characters.classId, classes.id))
+    .innerJoin(specializations, eq(classes.id, specializations.classId));
+
+  const characterData: {
+    id: number;
+    name: string;
+    class: {
+      id: number;
+      name: string;
+      specializations: {
+        id: number;
+        name: string;
+      }[];
+    };
+  }[] = [];
+
+  for (const dbCharacter of characterDbData) {
+    const existing = characterData.find((x) => x.id === dbCharacter.id);
+    if (existing) {
+      const existingSpec = existing.class.specializations.find(
+        (x) => x.id === dbCharacter.specializationId
+      );
+      if (!existingSpec) {
+        existing.class.specializations.push({
+          id: dbCharacter.specializationId,
+          name: dbCharacter.specializationName,
+        });
+      }
+    } else {
+      characterData.push({
+        id: dbCharacter.id,
+        name: dbCharacter.name,
+        class: {
+          id: dbCharacter.classId,
+          name: dbCharacter.className,
+          specializations: [
+            {
+              id: dbCharacter.specializationId,
+              name: dbCharacter.specializationName,
+            },
+          ],
         },
-      },
+      });
+    }
+  }
+  return characterData;
+};
+
+const upsertSyncHistory = async (
+  characterId: number,
+  specializationId: number,
+  difficulty: Difficulty,
+  value: Date
+) => {
+  await upsert({
+    table: wishlistUploads,
+    match: and(
+      eq(wishlistUploads.characterId, characterId),
+      eq(wishlistUploads.specializationId, specializationId)
+    ),
+    insert: {
+      characterId,
+      specializationId,
+      [difficulty]: value,
+    },
+    update: {
+      [difficulty]: value,
     },
   });
+};
+
+const updateSyncHistory = async () => {
+  const reportName = "wishlist-upload-dates";
+  await upsert({
+    table: syncHistory,
+    match: eq(syncHistory.reportName, reportName),
+    insert: {
+      reportName: reportName,
+      timestamp: new Date(),
+    },
+    update: {
+      timestamp: new Date(),
+    },
+  });
+};
+
+export default async function loadWishlistUploadDates() {
+  const characterData = await getCharacterData();
 
   const data = await getWishlists();
 
-  for (const character of characters) {
+  for (const character of characterData) {
     const wishlistCharacter = data.find((x) => x.name === character.name);
     if (!wishlistCharacter) continue;
     const currentTierInfo = wishlistCharacter.wishlists
@@ -33,80 +129,19 @@ export default async function loadWishlistUploadDates() {
         const uploadDateInfo =
           difficultyInfo.wishlist.wishlist.report_uploaded_at;
         if (uploadDateInfo) {
-          const specUploadInfo = uploadDateInfo[specialization.name];
+          const uploadDate = uploadDateInfo[specialization.name];
 
-          if (!specUploadInfo) continue;
+          if (!uploadDate) continue;
 
-          switch (difficulty) {
-            case "normal":
-              await prisma.wishlistUploadInfo.upsert({
-                where: {
-                  characterId_specializationId: {
-                    characterId: character.id,
-                    specializationId: specialization.id,
-                  },
-                },
-                create: {
-                  characterId: character.id,
-                  specializationId: specialization.id,
-                  normal: specUploadInfo,
-                },
-                update: {
-                  normal: specUploadInfo,
-                },
-              });
-              break;
-            case "heroic":
-              await prisma.wishlistUploadInfo.upsert({
-                where: {
-                  characterId_specializationId: {
-                    characterId: character.id,
-                    specializationId: specialization.id,
-                  },
-                },
-                create: {
-                  characterId: character.id,
-                  specializationId: specialization.id,
-                  heroic: specUploadInfo,
-                },
-                update: {
-                  heroic: specUploadInfo,
-                },
-              });
-              break;
-            case "mythic":
-              await prisma.wishlistUploadInfo.upsert({
-                where: {
-                  characterId_specializationId: {
-                    characterId: character.id,
-                    specializationId: specialization.id,
-                  },
-                },
-                create: {
-                  characterId: character.id,
-                  specializationId: specialization.id,
-                  mythic: specUploadInfo,
-                },
-                update: {
-                  mythic: specUploadInfo,
-                },
-              });
-              break;
-          }
+          await upsertSyncHistory(
+            character.id,
+            specialization.id,
+            difficulty,
+            uploadDate
+          );
         }
       }
     }
   }
-  await prisma.syncHistory.upsert({
-    where: {
-      reportName: "wishlist-upload-dates",
-    },
-    create: {
-      reportName: "wishlist-upload-dates",
-      timestamp: new Date(),
-    },
-    update: {
-      timestamp: new Date(),
-    },
-  });
+  await updateSyncHistory();
 }

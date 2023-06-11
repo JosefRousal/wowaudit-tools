@@ -1,10 +1,12 @@
 import { wow } from "blizzard.js";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { eq } from "drizzle-orm";
+import type { NextApiRequest, NextApiResponse } from "next/types";
 import { env } from "~/env.mjs";
-import { prisma } from "~/server/db";
+import characters from "~/server/drizzle/schema/characters";
+import upsert from "~/server/drizzle/upsert";
 
 export default async function handler(
-  request: NextApiRequest,
+  _: NextApiRequest,
   response: NextApiResponse
 ) {
   const wowClient = await wow.createInstance({
@@ -36,11 +38,10 @@ export default async function handler(
     const rank = item.rank;
     const character = item.character;
     if (![1, 3, 4].find((x) => x === rank)) continue;
-    await prisma.character.upsert({
-      where: {
-        id: character.id,
-      },
-      create: {
+    await upsert({
+      table: characters,
+      match: eq(characters.id, item.character.id),
+      insert: {
         id: character.id,
         name: character.name,
         classId: character.playable_class.id,

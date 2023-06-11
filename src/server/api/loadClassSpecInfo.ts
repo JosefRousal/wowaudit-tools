@@ -4,7 +4,10 @@ import {
   PlayableClassResponseSchema,
 } from "~/battlenet/types";
 import { env } from "~/env.mjs";
-import { prisma } from "~/server/db";
+import upsert from "../drizzle/upsert";
+import { eq } from "drizzle-orm";
+import classes from "../drizzle/schema/classes";
+import specializations from "../drizzle/schema/specializations";
 
 export default async function loadClassSpecInfo() {
   const wowClient = await wow.createInstance({
@@ -16,13 +19,16 @@ export default async function loadClassSpecInfo() {
   });
   const classResponse = await wowClient.playableClass();
   if (classResponse.status !== 200) return null;
-  const classes = PlayableClassIndexResponseSchema.parse(classResponse.data);
-  for (const playableClass of classes) {
-    await prisma.class.upsert({
-      where: { id: playableClass.id },
-      update: { name: playableClass.name },
-      create: {
+  const classData = PlayableClassIndexResponseSchema.parse(classResponse.data);
+  for (const playableClass of classData) {
+    await upsert({
+      table: classes,
+      match: eq(classes.id, playableClass.id),
+      insert: {
         id: playableClass.id,
+        name: playableClass.name,
+      },
+      update: {
         name: playableClass.name,
       },
     });
@@ -35,14 +41,15 @@ export default async function loadClassSpecInfo() {
       singleClassResponse.data
     );
     for (const specialization of singleClass.specializations) {
-      await prisma.specialization.upsert({
-        where: { id: specialization.id },
-        update: {
+      await upsert({
+        table: specializations,
+        match: eq(specializations.id, specialization.id),
+        insert: {
+          id: specialization.id,
           name: specialization.name,
           classId: playableClass.id,
         },
-        create: {
-          id: specialization.id,
+        update: {
           name: specialization.name,
           classId: playableClass.id,
         },

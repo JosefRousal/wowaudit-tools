@@ -1,6 +1,5 @@
 import { type NextRouter } from "next/router";
 import {
-  IconChartArrowsVertical,
   IconChecklist,
   IconGift,
 } from "@tabler/icons-react";
@@ -15,11 +14,6 @@ export const actions = [
     title: "Wishlist",
     route: "/wishlist",
     icon: <IconGift />,
-  },
-  {
-    title: "Tier Set Dps",
-    route: "/tier-sims",
-    icon: <IconChartArrowsVertical />,
   },
 ];
 

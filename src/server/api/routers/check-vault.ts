@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { prisma } from "~/server/db";
 import getHistoricalData from "~/wowaudit/characters/get-historical-data";
 
 export const checkVaultRouter = createTRPCRouter({
@@ -22,11 +21,4 @@ export const checkVaultRouter = createTRPCRouter({
         vaultThree: c.data?.vault_options.dungeons.option_3,
       }));
     }),
-  getLastSyncDate: publicProcedure.query(async () => {
-    return await prisma.syncHistory.findFirst({
-      where: {
-        reportName: "tier-sim-data",
-      },
-    });
-  }),
 });

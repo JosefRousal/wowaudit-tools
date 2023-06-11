@@ -1,0 +1,219 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "id": "925bdac0-44d2-4e01-8969-92c1d737807d",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "characters": {
+      "name": "characters",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "guildRank": {
+          "name": "guildRank",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "classId": {
+          "name": "classId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "characters_classId_classes_id_fk": {
+          "name": "characters_classId_classes_id_fk",
+          "tableFrom": "characters",
+          "tableTo": "classes",
+          "columnsFrom": [
+            "classId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {}
+    },
+    "classes": {
+      "name": "classes",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {}
+    },
+    "specializations": {
+      "name": "specializations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "classId": {
+          "name": "classId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "specializations_classId_classes_id_fk": {
+          "name": "specializations_classId_classes_id_fk",
+          "tableFrom": "specializations",
+          "tableTo": "classes",
+          "columnsFrom": [
+            "classId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {}
+    },
+    "sync_history": {
+      "name": "sync_history",
+      "schema": "",
+      "columns": {
+        "report_name": {
+          "name": "report_name",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {}
+    },
+    "wishlist_uploads": {
+      "name": "wishlist_uploads",
+      "schema": "",
+      "columns": {
+        "character_id": {
+          "name": "character_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "specialization_id": {
+          "name": "specialization_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "normal": {
+          "name": "normal",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "heroic": {
+          "name": "heroic",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mythic": {
+          "name": "mythic",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "wishlist_uploads_character_id_characters_id_fk": {
+          "name": "wishlist_uploads_character_id_characters_id_fk",
+          "tableFrom": "wishlist_uploads",
+          "tableTo": "characters",
+          "columnsFrom": [
+            "character_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "wishlist_uploads_specialization_id_specializations_id_fk": {
+          "name": "wishlist_uploads_specialization_id_specializations_id_fk",
+          "tableFrom": "wishlist_uploads",
+          "tableTo": "specializations",
+          "columnsFrom": [
+            "specialization_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "wishlist_uploads_character_id_specialization_id": {
+          "name": "wishlist_uploads_character_id_specialization_id",
+          "columns": [
+            "character_id",
+            "specialization_id"
+          ]
+        }
+      }
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

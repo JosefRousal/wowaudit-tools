@@ -23,6 +23,7 @@ export const env = createEnv({
       "https://kr.battle.net/oauth",
       "https://tw.battle.net/oauth",
     ]),
+    
   },
 
   /**
@@ -45,7 +46,7 @@ export const env = createEnv({
     WOWAUDIT_KEY: process.env.WOWAUDIT_KEY,
     BATTLENET_CLIENT_ID: process.env.BATTLENET_CLIENT_ID,
     BATTLENET_CLIENT_SECRET: process.env.BATTLENET_CLIENT_SECRET,
-    BATTLENET_ISSUER: process.env.BATTLENET_ISSUER,
+    BATTLENET_ISSUER: process.env.BATTLENET_ISSUER
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
 });
