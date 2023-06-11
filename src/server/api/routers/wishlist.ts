@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import loadWishlistUploadDates from "../loadWishlistUploadDates";
 import db from "~/server/drizzle/db";
 import { eq } from "drizzle-orm";
@@ -18,7 +18,7 @@ type CharacterWishlistUploadInfo = {
 };
 
 export const wishlistRouter = createTRPCRouter({
-  allCharacterWishlistUploadInfo: publicProcedure.query(async () => {
+  allCharacterWishlistUploadInfo: protectedProcedure.query(async () => {
     const syncHistoryData = await db
       .select({
         timestamp: syncHistory.timestamp,
@@ -52,7 +52,7 @@ export const wishlistRouter = createTRPCRouter({
       data: wishlistUploadData as CharacterWishlistUploadInfo[],
     };
   }),
-  refreshData: publicProcedure.mutation(async () => {
+  refreshData: protectedProcedure.mutation(async () => {
     await loadWishlistUploadDates();
   }),
 });

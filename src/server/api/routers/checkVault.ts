@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import getHistoricalData from "~/wowaudit/characters/get-historical-data";
 
 export const checkVaultRouter = createTRPCRouter({
-  getData: publicProcedure
+  getData: protectedProcedure
     .input(
       z.object({
         year: z.number(),

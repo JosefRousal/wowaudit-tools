@@ -1,6 +1,14 @@
-import { AppShell, Header, Navbar, ScrollArea, Text } from "@mantine/core";
+import {
+  AppShell,
+  Group,
+  Header,
+  Navbar,
+  ScrollArea,
+  Text,
+} from "@mantine/core";
 import MainLink from "./MainLink";
 import { actions } from "../actions";
+import AuthButton from "../AuthButton";
 
 const AppLayout = (props: { children: JSX.Element | JSX.Element[] }) => {
   return (
@@ -23,7 +31,12 @@ const AppLayout = (props: { children: JSX.Element | JSX.Element[] }) => {
       }
       header={
         <Header height={60} p="xs">
-          <Text h="1" fz="xl">Wowaudit Tools</Text>
+          <Group grow>
+            <Text h="1" fz="xl">
+              Wowaudit Tools
+            </Text>
+            <AuthButton />
+          </Group>
         </Header>
       }
       styles={(theme) => ({
