@@ -12,11 +12,8 @@ export const classes = pgTable("classes", {
   name: varchar("name").notNull(),
 });
 
-export const classSpecializationsRelation = relations(classes, ({ many }) => ({
+export const classRelations = relations(classes, ({ many }) => ({
   specializations: many(specializations),
-}));
-
-export const classCharactersRelation = relations(classes, ({ many }) => ({
   characters: many(characters),
 }));
 
@@ -28,7 +25,7 @@ export const specializations = pgTable("specializations", {
   name: varchar("name").notNull(),
 });
 
-export const classesRelation = relations(specializations, ({ one }) => ({
+export const specializationsRelation = relations(specializations, ({ one }) => ({
   class: one(classes),
 }));
 
@@ -41,8 +38,9 @@ export const characters = pgTable("characters", {
     .references(() => classes.id),
 });
 
-export const characterClassRelation = relations(characters, ({ one }) => ({
+export const charactersRelations = relations(characters, ({ one, many }) => ({
   class: one(classes),
+  wishlistUploads: many(wishlistUploads)
 }));
 
 export const syncHistory = pgTable("sync_history", {
