@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import getHistoricalData from "~/wowaudit/characters/get-historical-data";
+import getHistoricalData from "~/wowaudit/characters/getHistoricalData";
 
 export const checkVaultRouter = createTRPCRouter({
   getData: protectedProcedure

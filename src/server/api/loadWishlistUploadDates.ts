@@ -1,5 +1,5 @@
 import { type Difficulty } from "~/types";
-import getWishlists from "~/wowaudit/characters/get-wishlists";
+import getWishlists from "~/wowaudit/characters/getWishlists";
 import db from "../drizzle/db";
 import {
   characters,
