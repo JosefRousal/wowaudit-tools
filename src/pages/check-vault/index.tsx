@@ -3,6 +3,7 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import { Container, Group, Select, Space } from "@mantine/core";
 import { DataGrid } from "mantine-data-grid";
+import { signIn, useSession } from "next-auth/react";
 
 const getCurrentWeek = () => {
   const currentDate = new Date();
@@ -20,13 +21,21 @@ const arrayRange = (start: number, stop: number) =>
   );
 
 const Home: NextPage = () => {
+  const session = useSession();
   const [year, setYear] = useState(2023);
   const [week, setWeek] = useState(() => getCurrentWeek() - 1);
 
-  const query = api.checkVault.getData.useQuery({
-    year,
-    week,
-  });
+  const query = api.checkVault.getData.useQuery(
+    {
+      year,
+      week,
+    },
+    {
+      enabled: session.status === "authenticated",
+    }
+  );
+
+  if (session.status === "unauthenticated") void signIn();
 
   return (
     <>

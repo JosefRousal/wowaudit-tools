@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import moment from "moment";
 import LastSyncDate from "~/components/LastSyncDate";
+import { signIn, useSession } from "next-auth/react";
 
 const mapDateValue = (value: Date | null | undefined) => {
   if (!value) return <Mark>never</Mark>;
@@ -21,8 +22,15 @@ const mapDateValue = (value: Date | null | undefined) => {
 };
 
 const Home: NextPage = () => {
+  const session = useSession();
+
   const utils = api.useContext();
-  const query = api.wishlist.allCharacterWishlistUploadInfo.useQuery();
+  const query = api.wishlist.allCharacterWishlistUploadInfo.useQuery(
+    undefined,
+    {
+      enabled: session.status === "authenticated",
+    }
+  );
   const refreshData = api.wishlist.refreshData.useMutation({
     async onSettled() {
       await utils.wishlist.allCharacterWishlistUploadInfo.invalidate();
@@ -31,6 +39,8 @@ const Home: NextPage = () => {
 
   const isLoading = query.isLoading || refreshData.isLoading;
   const isError = query.isError || refreshData.isError;
+
+  if (session.status === "unauthenticated") void signIn();
 
   return (
     <Container fluid>

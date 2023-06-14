@@ -1,5 +1,5 @@
 import { type Difficulty } from "~/types";
-import getWishlists from "~/wowaudit/characters/getWishlists";
+import wowAuditApi from "~/wowaudit/wowAuditApi";
 import db from "../drizzle/db";
 import {
   characters,
@@ -114,7 +114,9 @@ const updateSyncHistory = async () => {
 export default async function loadWishlistUploadDates() {
   const characterData = await getCharacterData();
 
-  const data = await getWishlists();
+  const response = await wowAuditApi.getWishlists();
+  const data = response.characters;
+
 
   for (const character of characterData) {
     const wishlistCharacter = data.find((x) => x.name === character.name);
